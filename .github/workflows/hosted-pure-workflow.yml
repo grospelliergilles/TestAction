@@ -6,7 +6,7 @@
 # It is called "pure" because it is an example which minimizes the usage of custom GitHub actions,
 # but leverages directly the tools that could be easily run on your development machines (i.e. CMake, vcpkg, Ninja).
 name: hosted-pure-workflow
-on: [push]
+#on: [push]
 
 jobs:
   job:
@@ -21,8 +21,8 @@ jobs:
             triplet: x64-windows
           - os: ubuntu-latest
             triplet: x64-linux
-#          - os: macos-latest
-#            triplet: x64-osx
+          - os: macos-latest
+            triplet: x64-osx
 
     env:
       # Indicates the CMake build directory where project files and binaries are being produced.
@@ -63,9 +63,11 @@ jobs:
       - name: Show content of workspace after cache has been restored
         run: find $RUNNER_WORKSPACE
         shell: bash
-      # On Windows runners, let's ensure to have the Developer Command Prompt environment setup correctly. As used here the Developer Command Prompt created is targeting x64 and using the default the Windows SDK.
+      # On Windows runners, let's ensure to have the Developer Command Prompt environment setup correctly.
+      # As used here the Developer Command Prompt created is targeting x64 and using the default the Windows SDK.
       - uses: ilammy/msvc-dev-cmd@v1
-      # Run CMake to generate Ninja project files, using the vcpkg's toolchain file to resolve and install the dependencies as specified in vcpkg.json.
+      # Run CMake to generate Ninja project files, using the vcpkg's toolchain file to resolve and
+      # install the dependencies as specified in vcpkg.json.
       - name: Install dependencies and generate project files
         run: |
           cmake -S "${{ github.workspace }}/vcpkg_manifest" -B "${{ env.CMAKE_BUILD_DIR }}" -GNinja -DCMAKE_TOOLCHAIN_FILE="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake"
