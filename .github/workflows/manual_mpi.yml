@@ -42,6 +42,7 @@ jobs:
     - name: echo finished
       run: echo "Download finished"
     - name: install msmpi
-      run: .\msmpisetup.exe
+      shell: bash
+      run: ./msmpisetup.exe
       
         
