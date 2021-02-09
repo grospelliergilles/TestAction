@@ -38,7 +38,7 @@ jobs:
     steps:
     # Runs a single command using the runners shell
     - name: download msmpi 10.0
-      run: |
-        wget "https://download.microsoft.com/download/a/5/2/a5207ca5-1203-491a-8fb8-906fd68ae623/msmpisetup.exe"
-        echo "Download finished"
+      run: wget "https://download.microsoft.com/download/a/5/2/a5207ca5-1203-491a-8fb8-906fd68ae623/msmpisetup.exe"
+    - name: echo finished
+      run: echo "Download finished"
         
