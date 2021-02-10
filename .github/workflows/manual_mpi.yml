@@ -19,20 +19,9 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "greet"
-  greet:
+  install_mpi:
     # The type of runner that the job will run on
     runs-on: windows-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [windows-latest]
-        include:
-          - os: windows-latest
-            triplet: x64-windows
-          - os: ubuntu-latest
-            triplet: x64-linux
-          - os: macos-latest
-            triplet: x64-osx
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -42,7 +31,7 @@ jobs:
     - name: echo finished
       run: echo "Download finished"
     - name: install msmpi
-      shell: bash
-      run: ./msmpisetup.exe
+      shell: cmd
+      run: .\msmpisetup.exe
       
         
