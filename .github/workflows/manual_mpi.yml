@@ -33,5 +33,11 @@ jobs:
     - name: install msmpi
       shell: cmd
       run: .\msmpisetup.exe -unattend -verbose
+    - name: print dir
+      shell: cmd
+      run: |
+        dir "C:\Program Files"
+        dir "C:\Program Files\Microsoft MPI"
+        dir "C:\Program Files\Microsoft MPI\Bin"
       
         
