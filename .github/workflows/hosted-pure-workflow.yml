@@ -86,6 +86,6 @@ jobs:
       - name: Build
         run: |
           cmake --build "${{ env.CMAKE_BUILD_DIR }}"
-      - name: Show content of workspace at its completion
-        run: find $RUNNER_WORKSPACE
-        shell: bash
+      - name: Test
+        run: |
+          ctest "${{ env.CMAKE_BUILD_DIR }}"
