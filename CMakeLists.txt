@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.11)
 project(Test1 VERSION 0.1 LANGUAGES CXX)
+find_package(MPI REQUIRED)
 add_executable(main_test main.cc)
-
+enable_testing()
+target_link_libraries(main_test PRIVATE MPI::MPI_CXX)
+add_test(NAME t1 COMMAND ${MPIEXEC_EXECUTABLE} -n 4 ./main_test)
