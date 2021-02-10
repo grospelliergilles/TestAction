@@ -88,4 +88,4 @@ jobs:
           cmake --build "${{ env.CMAKE_BUILD_DIR }}"
       - name: Test
         run: |
-          ctest "${{ env.CMAKE_BUILD_DIR }}"
+          ctest -V "${{ env.CMAKE_BUILD_DIR }}"
