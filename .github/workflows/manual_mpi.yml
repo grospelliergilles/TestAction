@@ -32,6 +32,6 @@ jobs:
       run: echo "Download finished"
     - name: install msmpi
       shell: cmd
-      run: .\msmpisetup.exe
+      run: .\msmpisetup.exe -unattend -verbose
       
         
