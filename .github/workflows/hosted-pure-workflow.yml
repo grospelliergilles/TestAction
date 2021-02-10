@@ -6,7 +6,7 @@
 # It is called "pure" because it is an example which minimizes the usage of custom GitHub actions,
 # but leverages directly the tools that could be easily run on your development machines (i.e. CMake, vcpkg, Ninja).
 name: hosted-pure-workflow
-#on: [push]
+on: [push]
 
 jobs:
   job:
@@ -30,6 +30,18 @@ jobs:
       # Indicates the location of the vcpkg as a Git submodule of the project repository.
       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
 
+    steps:
+    - name: download and install msmpi 10.0
+      if: {{ matrix.os }} == "windows-latest"
+      shell: cmd
+      run: |
+        C:\msys64\usr\bin\wget.exe "https://download.microsoft.com/download/a/5/2/a5207ca5-1203-491a-8fb8-906fd68ae623/msmpisetup.exe"
+        echo "Download finished"
+        .\msmpisetup.exe -unattend -verbose
+        dir "C:\Program Files"
+        dir "C:\Program Files\Microsoft MPI"
+        dir "C:\Program Files\Microsoft MPI\Bin"
+    
     steps:
       - uses: actions/checkout@v2
         with:
