@@ -57,7 +57,7 @@ jobs:
           # The second path is the location of vcpkg (it contains the vcpkg executable and data files).
           # The other paths starting with '!' are exclusions: they contain termporary files generated during the build of the installed packages.
           path: |
-            ${{ env.CMAKE_BUILD_DIR }}/vcpkg_installed/
+            ${{ env.CMAKE_BUILD_DIR }}/vcpkg/vcpkg_installed/
             ${{ env.VCPKG_ROOT }}
             !${{ env.VCPKG_ROOT }}/buildtrees
             !${{ env.VCPKG_ROOT }}/packages
@@ -81,7 +81,10 @@ jobs:
       # install the dependencies as specified in vcpkg.json.
       - name: Install dependencies and generate project files
         run: |
-          cmake -S "${{ github.workspace }}/vcpkg_manifest" -B "${{ env.CMAKE_BUILD_DIR }}" -GNinja -DCMAKE_TOOLCHAIN_FILE="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake"
+          cmake -S "${{ github.workspace }}/vcpkg_manifest" -B "${{ env.CMAKE_BUILD_DIR }}/vcpkg" -GNinja -DCMAKE_TOOLCHAIN_FILE="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake"
+      - name: Configure project
+        run: |
+          cmake -S "${{ github.workspace }}" -B "${{ env.CMAKE_BUILD_DIR }}" -GNinja -DCMAKE_TOOLCHAIN_FILE="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake"
       # Build the whole project with Ninja (which is spawn by CMake).
       - name: Build
         run: |
