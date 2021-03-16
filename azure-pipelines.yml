@@ -18,6 +18,12 @@ steps:
     echo See https://aka.ms/yaml
   displayName: 'Run a multi-line script'
 
+- script: |
+    curl -Ls https://github.com/ninja-build/ninja/releases/download/v1.10.2/ninja-linux.zip -o ninja-linux.zip
+    unzip ninja-linux.zip
+    sudo cp -v ninja /usr/local/bin/
+  displayName: Install Ninja
+
 # CMake
 # Build with the CMake cross-platform build system
 - task: CMake@1
