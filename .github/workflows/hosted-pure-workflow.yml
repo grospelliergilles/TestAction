@@ -82,13 +82,13 @@ jobs:
       - name: Install dependencies and generate project files
         run: |
           cmake -S "${{ github.workspace }}/vcpkg_manifest" -B "${{ env.CMAKE_BUILD_DIR }}/vcpkg" -GNinja -DCMAKE_TOOLCHAIN_FILE="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake"
-      - name: Configure project
-        run: |
-          cmake -S "${{ github.workspace }}" -B "${{ env.CMAKE_BUILD_DIR }}" -GNinja -C "${{ env.CMAKE_BUILD_DIR }}/vcpkg/my.vcpkg.config.cmake"
-      # Build the whole project with Ninja (which is spawn by CMake).
-      - name: Build
-        run: |
-          cmake --build "${{ env.CMAKE_BUILD_DIR }}"
-      - name: Test
-        run: |
-          cd "${{ env.CMAKE_BUILD_DIR }}" && ctest -V
+#      - name: Configure project
+#        run: |
+#          cmake -S "${{ github.workspace }}" -B "${{ env.CMAKE_BUILD_DIR }}" -GNinja -C "${{ env.CMAKE_BUILD_DIR }}/vcpkg/my.vcpkg.config.cmake"
+#      # Build the whole project with Ninja (which is spawn by CMake).
+#      - name: Build
+#        run: |
+#          cmake --build "${{ env.CMAKE_BUILD_DIR }}"
+#      - name: Test
+#        run: |
+#          cd "${{ env.CMAKE_BUILD_DIR }}" && ctest -V
