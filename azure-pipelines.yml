@@ -21,12 +21,12 @@ steps:
 - script: |
     curl -Ls https://github.com/ninja-build/ninja/releases/download/v1.10.2/ninja-linux.zip -o ninja-linux.zip
     unzip ninja-linux.zip
-    sudo cp -v ninja /usr/local/bin/
+    sudo cp -v ninja /usr/bin/
+    echo "$PATH"
   displayName: Install Ninja
 
 # CMake
 # Build with the CMake cross-platform build system
 - task: CMake@1
   inputs:
-    #workingDirectory: 'build' # Optional
-    cmakeArgs: -S "$(Build.SourcesDirectory)/vcpkg_manifest" -B "build" -GNinja -DCMAKE_TOOLCHAIN_FILE="$(Build.SourcesDirectory)/vcpkg/scripts/buildsystems/vcpkg.cmake"
+    cmakeArgs: -S "$(Build.SourcesDirectory)/vcpkg_manifest" -B "build" -G Ninja -DCMAKE_TOOLCHAIN_FILE="$(Build.SourcesDirectory)/vcpkg/scripts/buildsystems/vcpkg.cmake"
