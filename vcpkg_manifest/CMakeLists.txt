@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(example CXX)
+project(vcpkg C CXX)
 
-#message(STATUS "Searching for MPI library")
-#find_package(MPI REQUIRED COMPONENTS CXX)
-#add_executable(example main.cpp)
-#enable_testing()
-#target_link_libraries(example PRIVATE MPI::MPI_CXX)
-#add_test(NAME t1 COMMAND ${MPIEXEC_EXECUTABLE} -n 4 ${CMAKE_CURRENT_BINARY_DIR}/example)
+file(WRITE "${CMAKE_BINARY_DIR}/my.vcpkg.config.cmake"
+  "set(VCPKG_TARGET_TRIPLET \"${VCPKG_TARGET_TRIPLET}\" CACHE STRING \"\")\n"
+  "set(VCPKG_TARGET_ARCHITECTURE \"${VCPKG_TARGET_ARCHITECTURE}\" CACHE STRING \"\")\n"
+  "set(VCPKG_PREFIX \"${_VCPKG_INSTALLED_DIR}\" CACHE STRING \"\")\n"
+  "set(VCPKG_PREFIX_TRIPLET \"$\{VCPKG_PREFIX\}/${VCPKG_TARGET_TRIPLET}\" CACHE STRING \"\")\n"
+  )
