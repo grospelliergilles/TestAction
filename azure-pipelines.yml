@@ -27,9 +27,15 @@ steps:
     sudo cp -v ninja /usr/bin/
     echo "$PATH"
   displayName: Install Ninja
+  # TODO: ajoute dans la cle du cache le numero du commit
+- task: Cache@2
+  displayName: Cache vcpkg artifcats
+  inputs:
+    key: '$(Build.SourcesDirectory)/vcpkg_manifest/vcpkg.json | "$(Agent.OS)"'
+    path: '$(Build.BinariesDirectory)/vcpkg'
 
 # CMake
 # Build with the CMake cross-platform build system
 - task: CMake@1
   inputs:
-    cmakeArgs: -S "$(Build.SourcesDirectory)/vcpkg_manifest" -B "build" -G Ninja -DCMAKE_TOOLCHAIN_FILE="$(Build.SourcesDirectory)/vcpkg/scripts/buildsystems/vcpkg.cmake"
+    cmakeArgs: -S "$(Build.SourcesDirectory)/vcpkg_manifest" -B "$(Build.BinariesDirectory)/vcpkg" -G Ninja -DCMAKE_TOOLCHAIN_FILE="$(Build.SourcesDirectory)/vcpkg/scripts/buildsystems/vcpkg.cmake"
