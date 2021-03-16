@@ -7,7 +7,7 @@ trigger:
 - master
 
 jobs:
-- job: Test1
+- job: BuildVcpkgDependencies
   pool:
     vmImage: ubuntu-20.04
 
@@ -77,9 +77,9 @@ jobs:
       $(Build.SourcesDirectory)/_build/print.sh
     displayName: Print infos
 
-# CMake
-# Build with the CMake cross-platform build system
-#- task: CMake@1
-#  displayName: Build code
-#  inputs:
-#    cmakeArgs: -S "$(Build.SourcesDirectory)" -B "$(Build.BinariesDirectory)/mybuild" -C $(Build.BinariesDirectory)/vcpkg/my.vcpkg.config.cmake
+- job: BuildProject
+  steps:
+  - task: CMake@1
+    displayName: Build code
+    inputs:
+      cmakeArgs: -S "$(Build.SourcesDirectory)" -B "$(Build.BinariesDirectory)/mybuild" -C $(Build.BinariesDirectory)/vcpkg/my.vcpkg.config.cmake
