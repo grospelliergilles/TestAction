@@ -30,10 +30,12 @@ steps:
   # TODO: ajoute dans la cle du cache le numero du commit
 
 - task: Cache@2
-  displayName: Cache vcpkg artifcats
+  displayName: Cache vcpkg artifcats and executable
   inputs:
     key: '$(Build.SourcesDirectory)/vcpkg_manifest/vcpkg.json | "$(Agent.OS)"'
-    path: '$(Build.BinariesDirectory)/vcpkg'
+    path: |
+      '$(Build.BinariesDirectory)/vcpkg/vcpkg_installed'
+      '$(Build.SourcesDirectory)/vcpkg'
 
 # CMake
 # Build with the CMake cross-platform build system
