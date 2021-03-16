@@ -9,6 +9,12 @@ trigger:
 pool:
   vmImage: ubuntu-20.04
 
+variables:
+- name: VCPKG_DEFAULT_BINARY_CACHE
+  value: $(Build.BinariesDirectory)/vcpkg_archives
+- name: System.Debug
+  value: true
+
 steps:
 - checkout: self
   submodules: true
@@ -22,12 +28,22 @@ steps:
   displayName: 'Run a multi-line script'
 
 - script: |
+    mkdir -p '$(VCPKG_DEFAULT_BINARY_CACHE)'
+  displayName: 'Run a multi-line script'
+
+- script: |
     curl -Ls https://github.com/ninja-build/ninja/releases/download/v1.10.2/ninja-linux.zip -o ninja-linux.zip
     unzip ninja-linux.zip
     sudo cp -v ninja /usr/bin/
     echo "$PATH"
   displayName: Install Ninja
   # TODO: ajoute dans la cle du cache le numero du commit
+
+- task: Cache@2
+  displayName: Cache vcpkg binaries
+  inputs:
+    key: '$(Agent.OS)'
+    path: '$(VCPKG_DEFAULT_BINARY_CACHE)'
 
 - task: Cache@2
   displayName: Cache vcpkg artifcats and executable
@@ -47,6 +63,7 @@ steps:
 - script: |
     /bin/pwd
     ls -lart
+    echo "HOME = $(HOME)"
     echo "VCPKG dir"
     ls -lart "$(Build.BinariesDirectory)/vcpkg/vcpkg_installed/x64-linux"
     echo "VCPKG bin dir"
