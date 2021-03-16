@@ -52,7 +52,7 @@ steps:
     path: '$(Build.SourcesDirectory)/vcpkg'
 
 - task: Cache@2
-  displayName: Cache vcpkg artifacts
+  displayName: Cache vcpkg artifacts and executable
   inputs:
     key: '$(Build.SourcesDirectory)/vcpkg_manifest/vcpkg.json | "$(Agent.OS)" | "cache-binaries"'
     path: $(Build.BinariesDirectory)/vcpkg/vcpkg_installed
@@ -77,7 +77,7 @@ steps:
 
 # CMake
 # Build with the CMake cross-platform build system
-- task: CMake@1
-  displayName: Build code
-  inputs:
-    cmakeArgs: -S "$(Build.SourcesDirectory)" -B "$(Build.BinariesDirectory)/mybuild" -C $(Build.BinariesDirectory)/vcpkg/my.vcpkg.config.cmake
+#- task: CMake@1
+#  displayName: Build code
+#  inputs:
+#    cmakeArgs: -S "$(Build.SourcesDirectory)" -B "$(Build.BinariesDirectory)/mybuild" -C $(Build.BinariesDirectory)/vcpkg/my.vcpkg.config.cmake
