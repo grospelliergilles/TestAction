@@ -6,74 +6,76 @@
 trigger:
 - master
 
-pool:
-  vmImage: ubuntu-20.04
+jobs:
+- job: Test1
+  pool:
+    vmImage: ubuntu-20.04
 
-variables:
-- name: VCPKG_DEFAULT_BINARY_CACHE
-  value: $(Build.BinariesDirectory)/vcpkg_archives
-- name: System.Debug
-  value: true
+  variables:
+  - name: VCPKG_DEFAULT_BINARY_CACHE
+    value: $(Build.BinariesDirectory)/vcpkg_archives
+  - name: System.Debug
+    value: true
 
-steps:
-- checkout: self
-  submodules: true
+  steps:
+  - checkout: self
+    submodules: true
 
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+  - script: echo Hello, world!
+    displayName: 'Run a one-line script'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+  - script: |
+      echo Add other tasks to build, test, and deploy your project.
+      echo See https://aka.ms/yaml
+    displayName: 'Run a multi-line script'
 
-- script: |
-    mkdir -p '$(VCPKG_DEFAULT_BINARY_CACHE)'
-  displayName: 'Run a multi-line script'
+  - script: |
+      mkdir -p '$(VCPKG_DEFAULT_BINARY_CACHE)'
+    displayName: 'Run a multi-line script'
 
-- script: |
-    curl -Ls https://github.com/ninja-build/ninja/releases/download/v1.10.2/ninja-linux.zip -o ninja-linux.zip
-    unzip ninja-linux.zip
-    sudo cp -v ninja /usr/bin/
-    echo "$PATH"
-  displayName: Install Ninja
+  - script: |
+      curl -Ls https://github.com/ninja-build/ninja/releases/download/v1.10.2/ninja-linux.zip -o ninja-linux.zip
+      unzip ninja-linux.zip
+      sudo cp -v ninja /usr/bin/
+      echo "$PATH"
+    displayName: Install Ninja
   # TODO: ajoute dans la cle du cache le numero du commit
 
-- task: Cache@2
-  displayName: Cache vcpkg binaries
-  inputs:
-    key: '$(Agent.OS)'
-    path: '$(VCPKG_DEFAULT_BINARY_CACHE)'
+  - task: Cache@2
+    displayName: Cache vcpkg binaries
+    inputs:
+      key: '$(Agent.OS)'
+      path: '$(VCPKG_DEFAULT_BINARY_CACHE)'
 
-- task: Cache@2
-  displayName: Cache vcpkg bootstrap
-  inputs:
-    key: '$(Build.SourcesDirectory)/vcpkg_manifest/vcpkg.json | "$(Agent.OS)" | "cache-boostrap"'
-    path: '$(Build.SourcesDirectory)/vcpkg'
+  - task: Cache@2
+    displayName: Cache vcpkg bootstrap
+    inputs:
+      key: '$(Build.SourcesDirectory)/vcpkg_manifest/vcpkg.json | "$(Agent.OS)" | "cache-boostrap"'
+      path: '$(Build.SourcesDirectory)/vcpkg'
 
-- task: Cache@2
-  displayName: Cache vcpkg artifacts and executable
-  inputs:
-    key: '$(Build.SourcesDirectory)/vcpkg_manifest/vcpkg.json | "$(Agent.OS)" | "cache-binaries"'
-    path: $(Build.BinariesDirectory)/vcpkg/vcpkg_installed
+  - task: Cache@2
+    displayName: Cache vcpkg artifacts and executable
+    inputs:
+      key: '$(Build.SourcesDirectory)/vcpkg_manifest/vcpkg.json | "$(Agent.OS)" | "cache-binaries"'
+      path: $(Build.BinariesDirectory)/vcpkg/vcpkg_installed
 
 # CMake
 # Build with the CMake cross-platform build system
-- task: CMake@1
-  displayName: Build vcpkg artifcats
-  inputs:
-    cmakeArgs: -S "$(Build.SourcesDirectory)/vcpkg_manifest" -B "$(Build.BinariesDirectory)/vcpkg" -DCMAKE_TOOLCHAIN_FILE="$(Build.SourcesDirectory)/vcpkg/scripts/buildsystems/vcpkg.cmake"
+  - task: CMake@1
+    displayName: Build vcpkg artifcats
+    inputs:
+      cmakeArgs: -S "$(Build.SourcesDirectory)/vcpkg_manifest" -B "$(Build.BinariesDirectory)/vcpkg" -DCMAKE_TOOLCHAIN_FILE="$(Build.SourcesDirectory)/vcpkg/scripts/buildsystems/vcpkg.cmake"
 
-- script: |
-    /bin/pwd
-    ls -lart
-    echo "HOME = $(HOME)"
-    echo "VCPKG dir"
-    ls -lart "$(Build.BinariesDirectory)/vcpkg/vcpkg_installed/x64-linux"
-    echo "VCPKG bin dir"
-    ls -lart "$(Build.BinariesDirectory)/vcpkg/vcpkg_installed/x64-linux/bin"
-    $(Build.SourcesDirectory)/_build/print.sh
-  displayName: Print infos
+  - script: |
+      /bin/pwd
+      ls -lart
+      echo "HOME = $(HOME)"
+      echo "VCPKG dir"
+      ls -lart "$(Build.BinariesDirectory)/vcpkg/vcpkg_installed/x64-linux"
+      echo "VCPKG bin dir"
+      ls -lart "$(Build.BinariesDirectory)/vcpkg/vcpkg_installed/x64-linux/bin"
+      $(Build.SourcesDirectory)/_build/print.sh
+    displayName: Print infos
 
 # CMake
 # Build with the CMake cross-platform build system
