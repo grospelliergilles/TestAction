@@ -46,12 +46,16 @@ steps:
     path: '$(VCPKG_DEFAULT_BINARY_CACHE)'
 
 - task: Cache@2
-  displayName: Cache vcpkg artifcats and executable
+  displayName: Cache vcpkg bootstrap
   inputs:
-    key: '$(Build.SourcesDirectory)/vcpkg_manifest/vcpkg.json | "$(Agent.OS)"'
-    path: |
-      '$(Build.BinariesDirectory)/vcpkg/vcpkg_installed'
-      '$(Build.SourcesDirectory)/vcpkg'
+    key: '$(Build.SourcesDirectory)/vcpkg_manifest/vcpkg.json | "$(Agent.OS)" | "cache-boostrap"'
+    path: '$(Build.SourcesDirectory)/vcpkg'
+
+- task: Cache@2
+  displayName: Cache vcpkg artifacts
+  inputs:
+    key: '$(Build.SourcesDirectory)/vcpkg_manifest/vcpkg.json | "$(Agent.OS)" | "cache-binaries"'
+    path: $(Build.BinariesDirectory)/vcpkg/vcpkg_installed
 
 # CMake
 # Build with the CMake cross-platform build system
