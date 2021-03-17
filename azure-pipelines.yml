@@ -30,7 +30,7 @@ stages:
 
     - script: echo Hello, world!
       displayName: 'Run a one-line script'
-
+      
     - bash: |
         echo Add other tasks to build, test, and deploy your project.
         echo See https://aka.ms/yaml
@@ -41,6 +41,17 @@ stages:
         mkdir -p '$(VCPKG_DEFAULT_BINARY_CACHE)'
       displayName: 'Run a multi-line script'
 
+    - script: |
+        C:\msys64\usr\bin\wget.exe "https://download.microsoft.com/download/a/5/2/a5207ca5-1203-491a-8fb8-906fd68ae623/msmpisetup.exe"
+        echo "Download finished"
+        .\msmpisetup.exe -unattend -verbose
+        dir "C:\Program Files"
+        dir "C:\Program Files\Microsoft MPI"
+        dir "C:\Program Files\Microsoft MPI\Bin"
+        if: matrix.os == 'windows-latest'
+      displayName: Download and install msmpi 10.0
+      condition: $(imageName)=='windows-2019'
+          
     - bash: |
         curl -Ls https://github.com/ninja-build/ninja/releases/download/v1.10.2/ninja-linux.zip -o ninja-linux.zip
         unzip ninja-linux.zip
