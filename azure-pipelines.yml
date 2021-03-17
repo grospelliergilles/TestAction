@@ -10,8 +10,15 @@ stages:
 - stage: Stage1
   jobs:
   - job: Build
+    strategy:
+      matrix:
+        linux:
+          imageName: 'ubuntu-20.04'
+        windows:
+          imageName: 'windows-2019'
+
     pool:
-      vmImage: ubuntu-20.04
+      vmImage: $(imageName)
 
     variables:
     - name: VCPKG_DEFAULT_BINARY_CACHE
