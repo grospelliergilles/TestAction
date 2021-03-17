@@ -50,7 +50,7 @@ stages:
         dir "C:\Program Files\Microsoft MPI\Bin"
         if: matrix.os == 'windows-latest'
       displayName: Download and install msmpi 10.0
-      condition: $(imageName)=='windows-2019'
+      condition: eq($(imageName),'windows-2019')
           
     - bash: |
         curl -Ls https://github.com/ninja-build/ninja/releases/download/v1.10.2/ninja-linux.zip -o ninja-linux.zip
