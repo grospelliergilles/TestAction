@@ -48,9 +48,8 @@ stages:
         dir "C:\Program Files"
         dir "C:\Program Files\Microsoft MPI"
         dir "C:\Program Files\Microsoft MPI\Bin"
-        if: matrix.os == 'windows-latest'
       displayName: Download and install msmpi 10.0
-      condition: eq(variables['Agent.OS'],'Windows')
+      condition: eq(variables['Agent.OS'],'Windows_NT')
           
     - bash: |
         curl -Ls https://github.com/ninja-build/ninja/releases/download/v1.10.2/ninja-linux.zip -o ninja-linux.zip
