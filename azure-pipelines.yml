@@ -82,8 +82,13 @@ stages:
       inputs:
         cmakeArgs: -S "$(Build.SourcesDirectory)" -B "$(Build.BinariesDirectory)/mybuild" -C $(Build.BinariesDirectory)/vcpkg/my.vcpkg.config.cmake
 
+    - task: CMake@1
+      displayName: Build code
+      inputs:
+        cmakeArgs: --build "$(Build.BinariesDirectory)/mybuild"
+
     - script: |
-        ctest -T Test
+        ctest -T Test -V
       displayName: Launch tests
       workingDirectory: "$(Build.BinariesDirectory)/mybuild"
 
@@ -91,5 +96,5 @@ stages:
       condition: succeededOrFailed()
       inputs:
         testRunner: cTest
-        testResultsFiles: '**/Testing/*/Test.xml'
+        testResultsFiles: '$(Build.BinariesDirectory)/mybuild/Testing/*/Test.xml'
         testRunTitle: 'test_win'
