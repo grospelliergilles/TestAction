@@ -94,6 +94,7 @@ stages:
         ls -lart "$(Build.BinariesDirectory)/vcpkg/vcpkg_installed/x64-linux/bin"
         $(Build.SourcesDirectory)/_build/print.sh
       displayName: Print infos
+      condition: eq(variables['Agent.OS'],'Linux')
 
     - task: CMake@1
       displayName: Configure code
