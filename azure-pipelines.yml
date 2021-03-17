@@ -31,16 +31,17 @@ stages:
     - script: echo Hello, world!
       displayName: 'Run a one-line script'
 
-    - script: |
+    - bash: |
         echo Add other tasks to build, test, and deploy your project.
         echo See https://aka.ms/yaml
       displayName: 'Run a multi-line script'
+      
 
-    - script: |
+    - bash: |
         mkdir -p '$(VCPKG_DEFAULT_BINARY_CACHE)'
       displayName: 'Run a multi-line script'
 
-    - script: |
+    - bash: |
         curl -Ls https://github.com/ninja-build/ninja/releases/download/v1.10.2/ninja-linux.zip -o ninja-linux.zip
         unzip ninja-linux.zip
         sudo cp -v ninja /usr/bin/
@@ -71,7 +72,7 @@ stages:
       inputs:
         cmakeArgs: -S "$(Build.SourcesDirectory)/vcpkg_manifest" -B "$(Build.BinariesDirectory)/vcpkg" -DCMAKE_TOOLCHAIN_FILE="$(Build.SourcesDirectory)/vcpkg/scripts/buildsystems/vcpkg.cmake"
 
-    - script: |
+    - bash: |
         /bin/pwd
         ls -lart
         echo "CPU_INFO:"
@@ -94,7 +95,7 @@ stages:
       inputs:
         cmakeArgs: --build "$(Build.BinariesDirectory)/mybuild"
 
-    - script: |
+    - bash: |
         ctest -T Test -V
       displayName: Launch tests
       workingDirectory: "$(Build.BinariesDirectory)/mybuild"
