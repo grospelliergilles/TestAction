@@ -9,15 +9,13 @@ trigger:
 stages:
 - stage: Stage1
   jobs:
-  - job: BuildVcpkgDependencies
+  - job: Build
     pool:
       vmImage: ubuntu-20.04
 
     variables:
     - name: VCPKG_DEFAULT_BINARY_CACHE
       value: $(Build.BinariesDirectory)/vcpkg_archives
-    - name: System.Debug
-      value: true
 
     steps:
     - checkout: self
@@ -56,13 +54,11 @@ stages:
         path: '$(Build.SourcesDirectory)/vcpkg'
 
     - task: Cache@2
-      displayName: Cache vcpkg artifacts and executable
+      displayName: Cache vcpkg artifacts
       inputs:
         key: '$(Build.SourcesDirectory)/vcpkg_manifest/vcpkg.json | "$(Agent.OS)" | "cache-binaries"'
         path: $(Build.BinariesDirectory)/vcpkg/vcpkg_installed
 
-# CMake
-# Build with the CMake cross-platform build system
     - task: CMake@1
       displayName: Build vcpkg artifcats
       inputs:
@@ -71,6 +67,8 @@ stages:
     - script: |
         /bin/pwd
         ls -lart
+        echo "CPU_INFO:"
+        cat /proc/cpuinfo
         echo "HOME = $(HOME)"
         echo "VCPKG dir"
         ls -lart "$(Build.BinariesDirectory)/vcpkg/vcpkg_installed/x64-linux"
@@ -80,6 +78,11 @@ stages:
       displayName: Print infos
 
     - task: CMake@1
-      displayName: Build code
+      displayName: Configure code
       inputs:
         cmakeArgs: -S "$(Build.SourcesDirectory)" -B "$(Build.BinariesDirectory)/mybuild" -C $(Build.BinariesDirectory)/vcpkg/my.vcpkg.config.cmake
+
+    - task: CMake@1
+      displayName: Build code
+      inputs:
+        cmakeArgs: --build "$(Build.BinariesDirectory)/mybuild" --target all
