@@ -99,7 +99,7 @@ stages:
     - task: CMake@1
       displayName: Configure code
       inputs:
-        cmakeArgs: -S "$(Build.SourcesDirectory)" -B "$(Build.BinariesDirectory)/mybuild" -C $(Build.BinariesDirectory)/vcpkg/my.vcpkg.config.cmake
+        cmakeArgs: -S "$(Build.SourcesDirectory)" -B "$(Build.BinariesDirectory)/mybuild" -C $(Build.BinariesDirectory)/vcpkg/my.vcpkg.config.cmake -DCMAKE_BUILD_TYPE=Debug
 
     - task: CMake@1
       displayName: Build code
@@ -107,7 +107,7 @@ stages:
         cmakeArgs: --build "$(Build.BinariesDirectory)/mybuild"
 
     - bash: |
-        ctest -T Test -V
+        ctest -T Test -V -C Debug
       displayName: Launch tests
       workingDirectory: "$(Build.BinariesDirectory)/mybuild"
 
