@@ -1,0 +1,15 @@
+name: Test Docker usage
+
+on:
+  workflow_dispatch:
+
+jobs:
+  testbox:
+    runs-on: ubuntu-latest
+    container:
+      image: nixos/nix
+    steps:  
+    - name: Update channel
+      run: |
+        nix-channel --add https://nixos.org/channels/nixpkgs-unstable nixpkgs
+        nix-channel --update
