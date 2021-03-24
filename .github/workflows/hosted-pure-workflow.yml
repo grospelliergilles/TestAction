@@ -6,7 +6,9 @@
 # It is called "pure" because it is an example which minimizes the usage of custom GitHub actions,
 # but leverages directly the tools that could be easily run on your development machines (i.e. CMake, vcpkg, Ninja).
 name: hosted-pure-workflow
-on: [push]
+#on: [push]
+on:
+  workflow_dispatch:
 
 jobs:
   job:
