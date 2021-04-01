@@ -8,4 +8,6 @@ file(WRITE "${CMAKE_BINARY_DIR}/my.vcpkg.config.cmake"
   "set(VCPKG_PREFIX \"${_VCPKG_INSTALLED_DIR}\" CACHE STRING \"\")\n"
   "set(VCPKG_PREFIX_TRIPLET \"$\{VCPKG_PREFIX\}/${VCPKG_TARGET_TRIPLET}\" CACHE STRING \"\")\n"
   "set(MPI_HOME \"$\{VCPKG_PREFIX_TRIPLET\}/tools/openmpi\" CACHE STRING \"\")\n"
+  "list(APPEND CMAKE_PREFIX_PATH \"$\{VCPKG_PREFIX_TRIPLET\}\")\n"
+  "set(CMAKE_PREFIX_PATH \"${CMAKE_PREFIX_PATH}\" CACHE STRING \"CMake prefix path\")\n"
   )
