@@ -37,6 +37,10 @@ jobs:
         with:
           submodules: true
 
+      - uses: actions/checkout@v2
+        with:
+          repository: arccon
+
       - name: download and install msmpi 10.0
         if: matrix.os == 'windows-latest'
         shell: cmd
