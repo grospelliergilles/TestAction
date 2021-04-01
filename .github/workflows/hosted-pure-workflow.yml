@@ -23,8 +23,8 @@ jobs:
             triplet: x64-windows
           - os: ubuntu-latest
             triplet: x64-linux
-          - os: macos-latest
-            triplet: x64-osx
+#          - os: macos-latest
+#            triplet: x64-osx
 
     env:
       # Indicates the CMake build directory where project files and binaries are being produced.
