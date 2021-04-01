@@ -33,13 +33,20 @@ jobs:
       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout actions
+        uses: actions/checkout@v2
         with:
           submodules: true
 
-      - uses: actions/checkout@v2
+      - name: Checkout arccon
+        uses: actions/checkout@v2
         with:
           repository: arccon
+
+      - name: Checkout arccore
+        uses: actions/checkout@v2
+        with:
+          repository: arccore
 
       - name: download and install msmpi 10.0
         if: matrix.os == 'windows-latest'
