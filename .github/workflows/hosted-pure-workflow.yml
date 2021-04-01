@@ -108,3 +108,14 @@ jobs:
 #      - name: Test
 #        run: |
 #          cd "${{ env.CMAKE_BUILD_DIR }}" && ctest -V
+
+      - name: Configure and build arccon
+        run: |
+          cmake -S "${{ github.workspace }}/arccon" -B "${{ env.CMAKE_BUILD_DIR }}/arccon" -GNinja -C "${{ env.CMAKE_BUILD_DIR }}/vcpkg/my.vcpkg.config.cmake" -DCMAKE_INSTALL_PREFIX="${{ env.CMAKE_BUILD_DIR }}/install_arccon"
+          cmake --build "${{ env.CMAKE_BUILD_DIR }}/arccon"
+          cmake --build "${{ env.CMAKE_BUILD_DIR }}/arccon" --target install
+
+      - name: Configure and build arccore
+        run: |
+          cmake -S "${{ github.workspace }}/arccore" -B "${{ env.CMAKE_BUILD_DIR }}/arccore" -GNinja -C "${{ env.CMAKE_BUILD_DIR }}/vcpkg/my.vcpkg.config.cmake" -DCMAKE_INSTALL_PREFIX="${{ env.CMAKE_BUILD_DIR }}/install_arccore" -DArccon_ROOT="${{ env.CMAKE_BUILD_DIR }}/install_arccon" -DBUILD_SHARED_LIBS=TRUE
+          cmake --build "${{ env.CMAKE_BUILD_DIR }}/arccore"
