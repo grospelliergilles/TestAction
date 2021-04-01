@@ -32,6 +32,7 @@ jobs:
       CMAKE_BUILD_DIR: ${{ github.workspace }}/builddir/
       # Indicates the location of the vcpkg as a Git submodule of the project repository.
       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+      VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/builddir/vcpkg_archives
 
     steps:
       - name: Checkout actions
@@ -65,6 +66,13 @@ jobs:
       # Setup the build agen machine with the most recent versions of CMake and Ninja.
       # Both are cached if not already: on subsequent runs both will be quickly restored from GitHub cache service.
       - uses: lukka/get-cmake@latest
+
+      - name: Restore vcpkg binaries
+        uses: actions/cache@v2
+        with:
+          path: "${{ env.VCPKG_DEFAULT_BINARY_CACHE }}"
+          key: ${{ matrix.triplet }}-vpckg-binaries
+
       # Restore both vcpkg and its artifacts from the GitHub cache service.
       - name: Restore vcpkg and its artifacts.
         uses: actions/cache@v2
@@ -97,6 +105,7 @@ jobs:
       # install the dependencies as specified in vcpkg.json.
       - name: Install dependencies and generate project files
         run: |
+          mkdir -p "${{ env.VCPKG_DEFAULT_BINARY_CACHE }}"
           cmake -S "${{ github.workspace }}/vcpkg_manifest" -B "${{ env.CMAKE_BUILD_DIR }}/vcpkg" -GNinja -DCMAKE_TOOLCHAIN_FILE="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake"
 #      - name: Configure project
 #        run: |
@@ -109,13 +118,13 @@ jobs:
 #        run: |
 #          cd "${{ env.CMAKE_BUILD_DIR }}" && ctest -V
 
-      - name: Configure and build arccon
-        run: |
-          cmake -S "${{ github.workspace }}/arccon" -B "${{ env.CMAKE_BUILD_DIR }}/arccon" -GNinja -C "${{ env.CMAKE_BUILD_DIR }}/vcpkg/my.vcpkg.config.cmake" -DCMAKE_INSTALL_PREFIX="${{ env.CMAKE_BUILD_DIR }}/install_arccon"
-          cmake --build "${{ env.CMAKE_BUILD_DIR }}/arccon"
-          cmake --build "${{ env.CMAKE_BUILD_DIR }}/arccon" --target install
+      # - name: Configure and build arccon
+      #   run: |
+      #     cmake -S "${{ github.workspace }}/arccon" -B "${{ env.CMAKE_BUILD_DIR }}/arccon" -GNinja -C "${{ env.CMAKE_BUILD_DIR }}/vcpkg/my.vcpkg.config.cmake" -DCMAKE_INSTALL_PREFIX="${{ env.CMAKE_BUILD_DIR }}/install_arccon"
+      #     cmake --build "${{ env.CMAKE_BUILD_DIR }}/arccon"
+      #     cmake --build "${{ env.CMAKE_BUILD_DIR }}/arccon" --target install
 
-      - name: Configure and build arccore
-        run: |
-          cmake -S "${{ github.workspace }}/arccore" -B "${{ env.CMAKE_BUILD_DIR }}/arccore" -GNinja -C "${{ env.CMAKE_BUILD_DIR }}/vcpkg/my.vcpkg.config.cmake" -DCMAKE_INSTALL_PREFIX="${{ env.CMAKE_BUILD_DIR }}/install_arccore" -DArccon_ROOT="${{ env.CMAKE_BUILD_DIR }}/install_arccon" -DBUILD_SHARED_LIBS=TRUE
-          cmake --build "${{ env.CMAKE_BUILD_DIR }}/arccore"
+      # - name: Configure and build arccore
+      #   run: |
+      #     cmake -S "${{ github.workspace }}/arccore" -B "${{ env.CMAKE_BUILD_DIR }}/arccore" -GNinja -C "${{ env.CMAKE_BUILD_DIR }}/vcpkg/my.vcpkg.config.cmake" -DCMAKE_INSTALL_PREFIX="${{ env.CMAKE_BUILD_DIR }}/install_arccore" -DArccon_ROOT="${{ env.CMAKE_BUILD_DIR }}/install_arccon" -DBUILD_SHARED_LIBS=TRUE
+      #     cmake --build "${{ env.CMAKE_BUILD_DIR }}/arccore"
