@@ -45,6 +45,7 @@ jobs:
         with:
           repository: ${{ github.repository_owner }}/arccon
           path: arccon
+          ref: gg/find_glib
 
       - name: Checkout arccore
         uses: actions/checkout@v2
