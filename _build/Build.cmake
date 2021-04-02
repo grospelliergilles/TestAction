@@ -1,6 +1,18 @@
 #set(TEST_DIR "/tmp/my_work_dir")
 set(CONFIG_TYPE Debug)
 #file(MAKE_DIRECTORY ${TEST_DIR})
+# L'appelant doit spécifier les variables suivantes:
+# - GIT_WORKSPACE: le chemin de base de ce dépot
+# - CONFIG_BUILD_DIR: le répertoire où seront compilées les sources
+
+# Sous windows, il faut convertir en chemin CMake pour éviter les
+# incohérences entre les '/' et les '\'.
+file(TO_CMAKE_PATH "${CONFIG_BUILD_DIR}" CONFIG_BUILD_DIR)
+file(TO_CMAKE_PATH "${GIT_WORKSPACE}" GIT_WORKSPACE)
+
+# A partir de CMake 3.20:
+# cmake_path(CONVERT "${CONFIG_BUILD_DIR}" TO_CMAKE_PATH_LIST CONFIG_BUILD_DIR NORMALIZE)
+# cmake_path(CONVERT "${GIT_WORKSPACE}" TO_CMAKE_PATH_LIST GIT_WORKSPACE NORMALIZE)
 
 macro(do_command)
   message("TRY COMMAND ARG=${ARGN}")
@@ -33,3 +45,4 @@ do_command(${CMAKE_COMMAND} -S "${GIT_WORKSPACE}/arccore" -B "${CONFIG_BUILD_DIR
   -DBUILD_SHARED_LIBS=TRUE
   )
 do_command(${CMAKE_COMMAND} --build "${CONFIG_BUILD_DIR}/arccore")
+do_command(${CMAKE_COMMAND} --build "${CONFIG_BUILD_DIR}/arccore" --target test)
