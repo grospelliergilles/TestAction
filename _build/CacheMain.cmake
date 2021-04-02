@@ -1,4 +1,4 @@
-message(STATUS "VCPKG_CMAKE_CACHE = ${VCPKG_CMAKE_CACHE}")
+﻿message(STATUS "VCPKG_CMAKE_CACHE = ${VCPKG_CMAKE_CACHE}")
 if (NOT VCPKG_CMAKE_CACHE)
   message(ERROR "VCPKG_CMAKE_CACHE is not defined")
 endif()
@@ -15,3 +15,10 @@ set(CMAKE_LIBRARY_PATH "${CMAKE_LIBRARY_PATH}" CACHE STRING "CMake library path"
 message(STATUS "PRINT: ${VCPKG_CMAKE_CACHE}")
 message(STATUS "PRINT: CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}")
 message(STATUS "PRINT: CMAKE_LIBRARY_PATH=${CMAKE_LIBRARY_PATH}")
+
+# ----------------------------------------------------------------------------
+# Local Variables:
+# tab-width: 2
+# indent-tabs-mode: nil
+# coding: utf-8-with-signature
+# End:
