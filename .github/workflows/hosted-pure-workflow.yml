@@ -33,6 +33,8 @@ jobs:
       # Indicates the location of the vcpkg as a Git submodule of the project repository.
       VCPKG_ROOT: ${{ github.workspace }}/vcpkg
       VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/builddir/vcpkg_archives
+      BUILD_COMMANDS_ROOT: ${{ github.workspace }}/_build
+      CMAKE_COMMON_ARGS: -DCONFIG_BUILD_DIR="${{ github.workspace }}/builddir/" -DGIT_WORKSPACE=${{ github.workspace }} -P ${{ github.workspace }}/_build/Build.cmake
 
     steps:
       - name: Checkout actions
@@ -58,12 +60,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: cmd
         run: |
-          C:\msys64\usr\bin\wget.exe "https://download.microsoft.com/download/a/5/2/a5207ca5-1203-491a-8fb8-906fd68ae623/msmpisetup.exe"
-          echo "Download finished"
-          .\msmpisetup.exe -unattend -verbose
-          dir "C:\Program Files"
-          dir "C:\Program Files\Microsoft MPI"
-          dir "C:\Program Files\Microsoft MPI\Bin"
+          ${{ env.BUILD_COMMANDS_ROOT }}\download_mswin_10.bat
       
       # Setup the build agen machine with the most recent versions of CMake and Ninja.
       # Both are cached if not already: on subsequent runs both will be quickly restored from GitHub cache service.
@@ -103,24 +100,12 @@ jobs:
       # On Windows runners, let's ensure to have the Developer Command Prompt environment setup correctly.
       # As used here the Developer Command Prompt created is targeting x64 and using the default the Windows SDK.
       - uses: ilammy/msvc-dev-cmd@v1
-      # Run CMake to generate Ninja project files, using the vcpkg's toolchain file to resolve and
-      # install the dependencies as specified in vcpkg.json.
       - name: Install dependencies and generate project files
         shell: bash
         run: |
           mkdir -p "${{ env.VCPKG_DEFAULT_BINARY_CACHE }}"
           cmake -S "${{ github.workspace }}/vcpkg_manifest" -B "${{ env.CMAKE_BUILD_DIR }}/vcpkg" -GNinja -DCMAKE_TOOLCHAIN_FILE="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake"
-#      - name: Configure project
-#        run: |
-#          cmake -S "${{ github.workspace }}" -B "${{ env.CMAKE_BUILD_DIR }}" -GNinja -C "${{ env.CMAKE_BUILD_DIR }}/vcpkg/my.vcpkg.config.cmake"
-#      # Build the whole project with Ninja (which is spawn by CMake).
-#      - name: Build
-#        run: |
-#          cmake --build "${{ env.CMAKE_BUILD_DIR }}"
-#      - name: Test
-#        run: |
-#          cd "${{ env.CMAKE_BUILD_DIR }}" && ctest -V
 
       - name: Configure and build arccon/arccore
         run: |
-          cmake -DCONFIG_BUILD_DIR="${{ env.CMAKE_BUILD_DIR }}" -DGIT_WORKSPACE="${{ github.workspace }}" -P ${{ github.workspace }}/_build/Build.cmake
+          cmake ${{ env.CMAKE_COMMON_ARGS }}"
