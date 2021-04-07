@@ -15,6 +15,22 @@ set(CMAKE_LIBRARY_PATH "${CMAKE_LIBRARY_PATH}" CACHE STRING "CMake library path"
 message(STATUS "PRINT: ${VCPKG_CMAKE_CACHE}")
 message(STATUS "PRINT: CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}")
 message(STATUS "PRINT: CMAKE_LIBRARY_PATH=${CMAKE_LIBRARY_PATH}")
+message(STATUS "PRINT: VCPKG_PREFIX_TRIPLET=${VCPKG_PREFIX_TRIPLET}")
+message(STATUS "PRINT: CONFIG_COPY_DLLS=${CONFIG_COPY_DLLS}")
+
+if(WIN32 AND CONFIG_COPY_DLLS)
+  message(STATUS "Win32!")
+  message(STATUS "PATH=${CMAKE_BINARY_DIR}")
+  file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
+  #file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+  #file(COPY "${VCPKG_PREFIX_TRIPLET}/bin" DESTINATION "${CMAKE_BINARY_DIR}/lib" PATTERN "*.dll")
+  file(GLOB DLL_LIST "${VCPKG_PREFIX_TRIPLET}/bin/*.dll")
+  message(STATUS "DLL_LIST:${DLL_LIST}")
+  foreach(F ${DLL_LIST})
+    message(STATUS "F=${F}")
+    file(COPY "${F}" DESTINATION "${CMAKE_BINARY_DIR}/lib")
+  endforeach()
+endif()
 
 # ----------------------------------------------------------------------------
 # Local Variables:

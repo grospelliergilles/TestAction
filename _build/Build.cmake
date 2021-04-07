@@ -1,5 +1,5 @@
 ﻿#set(TEST_DIR "/tmp/my_work_dir")
-set(CONFIG_TYPE Debug)
+set(CONFIG_TYPE RelWithDebInfo)
 #file(MAKE_DIRECTORY ${TEST_DIR})
 # L'appelant doit spécifier les variables suivantes:
 # - GIT_WORKSPACE: le chemin de base de ce dépot
@@ -15,6 +15,7 @@ file(TO_CMAKE_PATH "${GIT_WORKSPACE}" GIT_WORKSPACE)
 # cmake_path(CONVERT "${GIT_WORKSPACE}" TO_CMAKE_PATH_LIST GIT_WORKSPACE NORMALIZE)
 
 set(CONFIG_CACHE_DIR "${GIT_WORKSPACE}/_build/CacheMain.cmake")
+set(VCPKG_CMAKE_CACHE "${CONFIG_BUILD_DIR}/vcpkg/my.vcpkg.config.cmake")
 
 macro(do_command)
   message("TRY COMMAND ARG=${ARGN}")
@@ -29,16 +30,20 @@ macro(do_command)
   endif()
 endmacro()
 
+set(CONFIG_VCPKG_INSTALL_PATH "${CONFIG_BUILD_DIR}/vcpkg/vcpkg_installed")
+
 if (UNIX)
   set(GENERATOR_ARG "-GNinja")
+  set(TEST_TARGET test)
 endif()
 if (WIN32)
+  set(TEST_TARGET RUN_TESTS)
   # TODO: Il faut recopier les '.dll' utilisées dans le répertoire des libs
 endif()
 
 message(STATUS "Configure and build arccon")
 do_command(${CMAKE_COMMAND} -S "${GIT_WORKSPACE}/arccon" -B "${CONFIG_BUILD_DIR}/arccon" ${GENERATOR_ARG}
-  "-DVCPKG_CMAKE_CACHE=${CONFIG_BUILD_DIR}/vcpkg/my.vcpkg.config.cmake"
+  "-DVCPKG_CMAKE_CACHE=${VCPKG_CMAKE_CACHE}"
   -C "${CONFIG_CACHE_DIR}"
   "-DCMAKE_INSTALL_PREFIX=${CONFIG_BUILD_DIR}/install_arccon"
   )
@@ -46,15 +51,32 @@ do_command(${CMAKE_COMMAND} --build "${CONFIG_BUILD_DIR}/arccon")
 do_command(${CMAKE_COMMAND} --build "${CONFIG_BUILD_DIR}/arccon" --target install)
 
 message(STATUS "Configure and build arccore")
-do_command(${CMAKE_COMMAND} -S "${GIT_WORKSPACE}/arccore" -B "${CONFIG_BUILD_DIR}/arccore" ${GENERATOR_ARG}
-  "-DVCPKG_CMAKE_CACHE=${CONFIG_BUILD_DIR}/vcpkg/my.vcpkg.config.cmake"
-  -C "${CONFIG_CACHE_DIR}"
-  "-DCMAKE_INSTALL_PREFIX=${CONFIG_BUILD_DIR}/install_arccore"
-  "-DArccon_ROOT=${CONFIG_BUILD_DIR}/install_arccon"
-  -DBUILD_SHARED_LIBS=TRUE
-  )
+if (DO_WITH_VCPKGS)
+  do_command(${CMAKE_COMMAND} -S "${GIT_WORKSPACE}/arccore" -B "${CONFIG_BUILD_DIR}/arccore" ${GENERATOR_ARG}
+    "-DVCPKG_CMAKE_CACHE=${VCPKG_CMAKE_CACHE}"
+    "-DCMAKE_INSTALL_PREFIX=${CONFIG_BUILD_DIR}/install_arccore"
+    "-DArccon_ROOT=${CONFIG_BUILD_DIR}/install_arccon"
+    -DBUILD_SHARED_LIBS=TRUE
+    -DCMAKE_TOOLCHAIN_FILE=${GIT_WORKSPACE}/vcpkg/scripts/buildsystems/vcpkg.cmake
+    -DCMAKE_BUILD_TYPE=${CONFIG_TYPE}
+    -DARCCORE_BUILD_MODE=Check
+    )
+else()
+  do_command(${CMAKE_COMMAND} -S "${GIT_WORKSPACE}/arccore" -B "${CONFIG_BUILD_DIR}/arccore" ${GENERATOR_ARG}
+    "-DVCPKG_CMAKE_CACHE=${VCPKG_CMAKE_CACHE}"
+    -C "${CONFIG_CACHE_DIR}"
+    "-DCMAKE_INSTALL_PREFIX=${CONFIG_BUILD_DIR}/install_arccore"
+    "-DArccon_ROOT=${CONFIG_BUILD_DIR}/install_arccon"
+    -DBUILD_SHARED_LIBS=TRUE
+    -DCONFIG_COPY_DLLS=TRUE
+    -DCMAKE_BUILD_TYPE=${CONFIG_TYPE}
+    -DARCCORE_BUILD_MODE=Check
+    )
+endif()
+
 do_command(${CMAKE_COMMAND} --build "${CONFIG_BUILD_DIR}/arccore")
-do_command(${CMAKE_COMMAND} --build "${CONFIG_BUILD_DIR}/arccore" --target test)
+#do_command(${CMAKE_COMMAND} --build "${CONFIG_BUILD_DIR}/arccore" --target test)
+do_command(${CMAKE_COMMAND} --build "${CONFIG_BUILD_DIR}/arccore" --target ${TEST_TARGET})
 
 # ----------------------------------------------------------------------------
 # Local Variables:
