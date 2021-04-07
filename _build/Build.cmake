@@ -32,6 +32,10 @@ endmacro()
 
 set(CONFIG_VCPKG_INSTALL_PATH "${CONFIG_BUILD_DIR}/vcpkg/vcpkg_installed")
 
+if (WIN32)
+  set(DO_WITH_VCPKG TRUE)
+endif()
+
 if (UNIX)
   set(GENERATOR_ARG "-GNinja")
   set(TEST_TARGET test)
@@ -51,7 +55,9 @@ do_command(${CMAKE_COMMAND} --build "${CONFIG_BUILD_DIR}/arccon")
 do_command(${CMAKE_COMMAND} --build "${CONFIG_BUILD_DIR}/arccon" --target install)
 
 message(STATUS "Configure and build arccore")
-if (DO_WITH_VCPKGS)
+if (DO_WITH_VCPKG)
+  # Copie le fichier contenant les dépendances des packages 'vcpkg' nécessaires pour arccore
+  file(COPY "${GIT_WORKSPACE}/_build/arccore/vcpkg.json" DESTINATION "${GIT_WORKSPACE}/arccore")
   do_command(${CMAKE_COMMAND} -S "${GIT_WORKSPACE}/arccore" -B "${CONFIG_BUILD_DIR}/arccore" ${GENERATOR_ARG}
     "-DVCPKG_CMAKE_CACHE=${VCPKG_CMAKE_CACHE}"
     "-DCMAKE_INSTALL_PREFIX=${CONFIG_BUILD_DIR}/install_arccore"
