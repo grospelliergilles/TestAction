@@ -28,35 +28,45 @@ endif()
 
 message(STATUS "Build command = ${BUILD_COMMANDS}")
 
-macro(do_command)
-  message("TRY COMMAND ARG=${ARGN}")
+function(do_command command_name)
+  set(options        )
+  set(oneValueArgs   WORKING_DIRECTORY)
+  set(multiValueArgs )
+
+  cmake_parse_arguments(ARGS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+  message(STATUS "WORKING_DIRECTORY=${ARGS_WORKING_DIRECTORY}")
+  if (NOT ARGS_WORKING_DIRECTORY)
+    set(ARGS_WORKING_DIRECTORY ${CONFIG_BUILD_DIR})
+  endif()
+
+  message(STATUS "TRY COMMAND COMMAND=${command_name} WORKING_DIRECTORY=${ARGS_WORKING_DIRECTORY} ARGS=${ARGS_UNPARSED_ARGUMENTS}")
+
   execute_process(
-    COMMAND ${ARGN}
+    COMMAND ${command_name} ${ARGS_UNPARSED_ARGUMENTS}
     RESULT_VARIABLE RET_VALUE
-    WORKING_DIRECTORY ${CONFIG_BUILD_DIR}
+    WORKING_DIRECTORY ${ARGS_WORKING_DIRECTORY}
     )
   message(STATUS "RET_VALUE=${RET_VALUE}")
   if (NOT RET_VALUE EQUAL 0)
     message(FATAL_ERROR "Bad return value R=${RET_VALUE}")
   endif()
-endmacro()
+endfunction()
 
 set(CONFIG_VCPKG_INSTALL_PATH "${CONFIG_BUILD_DIR}/vcpkg/vcpkg_installed")
 
 if (WIN32)
-  set(DO_WITH_VCPKG TRUE)
+  set(DO_WITH_VCPKG_TOOLCHAIN TRUE)
 endif()
 
 if (UNIX)
   set(GENERATOR_ARG "-GNinja")
-  set(TEST_TARGET test)
 endif()
 if (WIN32)
-  set(TEST_TARGET RUN_TESTS)
   # TODO: Il faut recopier les '.dll' utilisées dans le répertoire des libs
+  # si on n'utilise pas 'vcpkg'
+  # TODO: regarder s'il est intéressant d'utiliser aussi ninja sous windows
 endif()
 
-message(STATUS "Configure and build arccon")
 if("configure_arccon" IN_LIST BUILD_COMMANDS)
   do_command(${CMAKE_COMMAND} -S "${GIT_WORKSPACE}/arccon" -B "${CONFIG_BUILD_DIR}/arccon" ${GENERATOR_ARG}
   "-DVCPKG_CMAKE_CACHE=${VCPKG_CMAKE_CACHE}"
@@ -71,30 +81,26 @@ if("install_arccon" IN_LIST BUILD_COMMANDS)
   do_command(${CMAKE_COMMAND} --build "${CONFIG_BUILD_DIR}/arccon" --target install)
 endif()
 
-message(STATUS "Configure and build arccore")
 if("configure_arccore" IN_LIST BUILD_COMMANDS)
-  if (DO_WITH_VCPKG)
+  set(ARCCORE_CMAKE_COMMON_ARGS -S "${GIT_WORKSPACE}/arccore"  -B "${CONFIG_BUILD_DIR}/arccore" ${GENERATOR_ARG}
+    "-DVCPKG_CMAKE_CACHE=${VCPKG_CMAKE_CACHE}"
+    "-DCMAKE_INSTALL_PREFIX=${CONFIG_BUILD_DIR}/install_arccore"
+    "-DArccon_ROOT=${CONFIG_BUILD_DIR}/install_arccon"
+    -DBUILD_SHARED_LIBS=TRUE
+    -DCMAKE_BUILD_TYPE=${CONFIG_TYPE}
+    -DARCCORE_BUILD_MODE=Check
+    )
+
+  if (DO_WITH_VCPKG_TOOLCHAIN)
     # Copie le fichier contenant les dépendances des packages 'vcpkg' nécessaires pour arccore
     file(COPY "${GIT_WORKSPACE}/_build/arccore/vcpkg.json" DESTINATION "${GIT_WORKSPACE}/arccore")
-    do_command(${CMAKE_COMMAND} -S "${GIT_WORKSPACE}/arccore" -B "${CONFIG_BUILD_DIR}/arccore" ${GENERATOR_ARG}
-      "-DVCPKG_CMAKE_CACHE=${VCPKG_CMAKE_CACHE}"
-      "-DCMAKE_INSTALL_PREFIX=${CONFIG_BUILD_DIR}/install_arccore"
-      "-DArccon_ROOT=${CONFIG_BUILD_DIR}/install_arccon"
-      -DBUILD_SHARED_LIBS=TRUE
+    do_command(${CMAKE_COMMAND} ${ARCCORE_CMAKE_COMMON_ARGS}
       -DCMAKE_TOOLCHAIN_FILE=${GIT_WORKSPACE}/vcpkg/scripts/buildsystems/vcpkg.cmake
-      -DCMAKE_BUILD_TYPE=${CONFIG_TYPE}
-      -DARCCORE_BUILD_MODE=Check
       )
   else()
-    do_command(${CMAKE_COMMAND} -S "${GIT_WORKSPACE}/arccore" -B "${CONFIG_BUILD_DIR}/arccore" ${GENERATOR_ARG}
-      "-DVCPKG_CMAKE_CACHE=${VCPKG_CMAKE_CACHE}"
+    do_command(${CMAKE_COMMAND} ${ARCCORE_CMAKE_COMMON_ARGS}
       -C "${CONFIG_CACHE_DIR}"
-      "-DCMAKE_INSTALL_PREFIX=${CONFIG_BUILD_DIR}/install_arccore"
-      "-DArccon_ROOT=${CONFIG_BUILD_DIR}/install_arccon"
-      -DBUILD_SHARED_LIBS=TRUE
       -DCONFIG_COPY_DLLS=TRUE
-      -DCMAKE_BUILD_TYPE=${CONFIG_TYPE}
-      -DARCCORE_BUILD_MODE=Check
       )
   endif()
 endif()
@@ -104,7 +110,8 @@ if("build_arccore" IN_LIST BUILD_COMMANDS)
 endif()
 #do_command(${CMAKE_COMMAND} --build "${CONFIG_BUILD_DIR}/arccore" --target test)
 if("test_arccore" IN_LIST BUILD_COMMANDS)
-  do_command(${CMAKE_COMMAND} --build "${CONFIG_BUILD_DIR}/arccore" --target ${TEST_TARGET})
+  message(STATUS "CMAKE_CTEST_COMMAND IS: ${CMAKE_CTEST_COMMAND}")
+  do_command(${CMAKE_CTEST_COMMAND} WORKING_DIRECTORY "${CONFIG_BUILD_DIR}/arccore")
 endif()
 
 # ----------------------------------------------------------------------------
