@@ -45,13 +45,14 @@ jobs:
         with:
           repository: ${{ github.repository_owner }}/arccon
           path: arccon
-          ref: gg/find_glib
+          ref: dev/cea
 
       - name: Checkout arccore
         uses: actions/checkout@v2
         with:
           repository: ${{ github.repository_owner }}/arccore
           path: arccore
+          ref: dev/cea
 
       - name: download and install msmpi 10.0
         if: matrix.os == 'windows-latest'
