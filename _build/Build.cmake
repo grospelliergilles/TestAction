@@ -1,5 +1,6 @@
 ﻿#set(TEST_DIR "/tmp/my_work_dir")
 set(CONFIG_TYPE RelWithDebInfo)
+set(CONFIG_TYPE Debug)
 #file(MAKE_DIRECTORY ${TEST_DIR})
 # L'appelant doit spécifier les variables suivantes:
 # - GIT_WORKSPACE: le chemin de base de ce dépot
