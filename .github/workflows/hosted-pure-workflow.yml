@@ -49,6 +49,20 @@ jobs:
           path: arccon
           ref: dev/cea
 
+      - name: Checkout dependencies
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ github.repository_owner }}/dependencies
+          path: dependencies
+          ref: dev/cea
+
+      - name: Checkout axlstar
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ github.repository_owner }}/axlstar
+          path: axlstar
+          ref: dev/cea
+
       - name: Checkout arccore
         uses: actions/checkout@v2
         with:
@@ -109,8 +123,14 @@ jobs:
       - name: Configure, build and install arccon
         run: cmake -DBUILD_COMMANDS="configure_arccon;build_arccon;install_arccon" ${{ env.CMAKE_COMMON_ARGS }}
 
-      - name: Configure and build arccore
-        run: cmake -DBUILD_COMMANDS="configure_arccore;build_arccore" ${{ env.CMAKE_COMMON_ARGS }}
+      - name: Configure, build and install dependencies
+        run: cmake -DBUILD_COMMANDS="configure_dependencies;build_dependencies;install_dependencies" ${{ env.CMAKE_COMMON_ARGS }}
 
-      - name: Test arccore
-        run: cmake -DBUILD_COMMANDS="test_arccore" ${{ env.CMAKE_COMMON_ARGS }}
+      - name: Configure, build and install axlstar
+        run: cmake -DBUILD_COMMANDS="configure_axlstar;build_axlstar;install_axlstar" ${{ env.CMAKE_COMMON_ARGS }}
+
+#      - name: Configure and build arccore
+#        run: cmake -DBUILD_COMMANDS="configure_arccore;build_arccore" ${{ env.CMAKE_COMMON_ARGS }}
+
+#      - name: Test arccore
+#        run: cmake -DBUILD_COMMANDS="test_arccore" ${{ env.CMAKE_COMMON_ARGS }}

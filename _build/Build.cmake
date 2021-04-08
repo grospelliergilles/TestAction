@@ -20,6 +20,7 @@ set(CONFIG_CACHE_DIR "${GIT_WORKSPACE}/_build/CacheMain.cmake")
 set(VCPKG_CMAKE_CACHE "${CONFIG_BUILD_DIR}/vcpkg/my.vcpkg.config.cmake")
 set(ALL_COMMANDS
   "configure_arccon" "build_arccon" "install_arccon"
+  "configure_axlstar" "build_axlstar" "install_axlstar"
   "configure_arccore" "build_arccore" "test_arccore" "install_arccore"
   )
 if (NOT BUILD_COMMANDS)
@@ -79,6 +80,38 @@ if("build_arccon" IN_LIST BUILD_COMMANDS)
 endif()
 if("install_arccon" IN_LIST BUILD_COMMANDS)
   do_command(${CMAKE_COMMAND} --build "${CONFIG_BUILD_DIR}/arccon" --target install)
+endif()
+
+if("configure_dependencies" IN_LIST BUILD_COMMANDS)
+  do_command(${CMAKE_COMMAND} -S "${GIT_WORKSPACE}/dependencies" -B "${CONFIG_BUILD_DIR}/dependencies" ${GENERATOR_ARG}
+  "-DVCPKG_CMAKE_CACHE=${VCPKG_CMAKE_CACHE}"
+  -C "${CONFIG_CACHE_DIR}"
+  "-DArccon_ROOT=${CONFIG_BUILD_DIR}/install_arccon"
+  "-DCMAKE_INSTALL_PREFIX=${CONFIG_BUILD_DIR}/install_dependencies"
+  )
+endif()
+if("build_dependencies" IN_LIST BUILD_COMMANDS)
+  do_command(${CMAKE_COMMAND} --build "${CONFIG_BUILD_DIR}/dependencies")
+endif()
+if("install_dependencies" IN_LIST BUILD_COMMANDS)
+  do_command(${CMAKE_COMMAND} --build "${CONFIG_BUILD_DIR}/dependencies" --target install)
+endif()
+
+if("configure_axlstar" IN_LIST BUILD_COMMANDS)
+  do_command(${CMAKE_COMMAND} -S "${GIT_WORKSPACE}/axlstar" -B "${CONFIG_BUILD_DIR}/axlstar" ${GENERATOR_ARG}
+  "-DVCPKG_CMAKE_CACHE=${VCPKG_CMAKE_CACHE}"
+  -C "${CONFIG_CACHE_DIR}"
+  "-DArcDependencies_ROOT=${CONFIG_BUILD_DIR}/install_dependencies"
+  "-DArccon_ROOT=${CONFIG_BUILD_DIR}/install_arccon"
+  "-DCMAKE_INSTALL_PREFIX=${CONFIG_BUILD_DIR}/install_axlstar"
+  )
+endif()
+
+if("build_axlstar" IN_LIST BUILD_COMMANDS)
+  do_command(${CMAKE_COMMAND} --build "${CONFIG_BUILD_DIR}/axlstar")
+endif()
+if("install_axlstar" IN_LIST BUILD_COMMANDS)
+  do_command(${CMAKE_COMMAND} --build "${CONFIG_BUILD_DIR}/axlstar" --target install)
 endif()
 
 if("configure_arccore" IN_LIST BUILD_COMMANDS)
