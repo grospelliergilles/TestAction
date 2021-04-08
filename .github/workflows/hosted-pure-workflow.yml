@@ -75,6 +75,7 @@ jobs:
         with:
           repository: ${{ github.repository_owner }}/arcane
           path: arcane
+          token: ${{ secrets.ArcaneCO }}
           ref: dev/cea
 
       - name: download and install msmpi 10.0
