@@ -142,3 +142,6 @@ jobs:
 
       - name: Test arccore
         run: cmake -DBUILD_COMMANDS="test_arccore" ${{ env.CMAKE_COMMON_ARGS }}
+
+      - name: Configure, build arcane
+        run: cmake -DBUILD_COMMANDS="configure_arcane;build_arcane;install_arcane" ${{ env.CMAKE_COMMON_ARGS }}
