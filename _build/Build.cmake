@@ -192,7 +192,7 @@ endif()
 #do_command(${CMAKE_COMMAND} --build "${CONFIG_BUILD_DIR}/arcane" --target test)
 if("test_arcane" IN_LIST BUILD_COMMANDS)
   message(STATUS "CMAKE_CTEST_COMMAND IS: ${CMAKE_CTEST_COMMAND}")
-  do_command(${CMAKE_CTEST_COMMAND} WORKING_DIRECTORY "${CONFIG_BUILD_DIR}/arcane")
+  do_command(${CMAKE_CTEST_COMMAND} WORKING_DIRECTORY "${CONFIG_BUILD_DIR}/arcane" -I 1,40)
 endif()
 
 # ----------------------------------------------------------------------------
