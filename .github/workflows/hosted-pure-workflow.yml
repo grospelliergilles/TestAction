@@ -61,7 +61,7 @@ jobs:
         with:
           repository: ${{ github.repository_owner }}/axlstar
           path: axlstar
-          ref: dev/cea
+          ref: dev/cea2
 
       - name: Checkout arccore
         uses: actions/checkout@v2
