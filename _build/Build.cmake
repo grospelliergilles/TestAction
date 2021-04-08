@@ -63,6 +63,7 @@ if (WIN32)
 endif()
 
 if (UNIX)
+  set(DO_WITH_VCPKG_TOOLCHAIN TRUE)
   set(GENERATOR_ARG "-GNinja")
 endif()
 if (WIN32)
@@ -165,6 +166,8 @@ if("configure_arcane" IN_LIST BUILD_COMMANDS)
     "-DAxlstar_ROOT=${CONFIG_BUILD_DIR}/install_axlstar"
     "-DArcDependencies_ROOT=${CONFIG_BUILD_DIR}/install_dependencies"
     "-DARCANE_DEFAULT_PARTITIONER=Metis"
+    "-DARCCON_REGISTER_PACKAGE_VERSION=2"
+    -DARCANE_WANT_ARCCON_EXPORT_TARGET=OFF
     -DBUILD_SHARED_LIBS=TRUE
     -DCMAKE_BUILD_TYPE=${CONFIG_TYPE}
     )
