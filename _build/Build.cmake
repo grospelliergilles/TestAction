@@ -20,8 +20,10 @@ set(CONFIG_CACHE_DIR "${GIT_WORKSPACE}/_build/CacheMain.cmake")
 set(VCPKG_CMAKE_CACHE "${CONFIG_BUILD_DIR}/vcpkg/my.vcpkg.config.cmake")
 set(ALL_COMMANDS
   "configure_arccon" "build_arccon" "install_arccon"
+  "configure_dependencies" "build_dependencies" "install_dependencies"
   "configure_axlstar" "build_axlstar" "install_axlstar"
   "configure_arccore" "build_arccore" "test_arccore" "install_arccore"
+  "configure_arcane" "build_arcane" "test_arcane" "install_arcane"
   )
 if (NOT BUILD_COMMANDS)
   set(BUILD_COMMANDS ${ALL_COMMANDS})
@@ -145,6 +147,48 @@ endif()
 if("test_arccore" IN_LIST BUILD_COMMANDS)
   message(STATUS "CMAKE_CTEST_COMMAND IS: ${CMAKE_CTEST_COMMAND}")
   do_command(${CMAKE_CTEST_COMMAND} WORKING_DIRECTORY "${CONFIG_BUILD_DIR}/arccore")
+endif()
+if("install_arccore" IN_LIST BUILD_COMMANDS)
+  do_command(${CMAKE_COMMAND} --build "${CONFIG_BUILD_DIR}/arccore" --target install)
+endif()
+
+# ----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
+
+if("configure_arcane" IN_LIST BUILD_COMMANDS)
+  set(ARCANE_CMAKE_COMMON_ARGS -S "${GIT_WORKSPACE}/arcane"  -B "${CONFIG_BUILD_DIR}/arcane" ${GENERATOR_ARG}
+    "-DVCPKG_CMAKE_CACHE=${VCPKG_CMAKE_CACHE}"
+    "-DCMAKE_INSTALL_PREFIX=${CONFIG_BUILD_DIR}/install_arcane"
+    "-DArccon_ROOT=${CONFIG_BUILD_DIR}/install_arccon"
+    "-DArccore_ROOT=${CONFIG_BUILD_DIR}/install_arccore"
+    "-DAxlstar_ROOT=${CONFIG_BUILD_DIR}/install_axlstar"
+    "-DArcDependencies_ROOT=${CONFIG_BUILD_DIR}/install_dependencies"
+    "-DARCANE_DEFAULT_PARTITIONER=Metis"
+    -DBUILD_SHARED_LIBS=TRUE
+    -DCMAKE_BUILD_TYPE=${CONFIG_TYPE}
+    )
+
+  if (DO_WITH_VCPKG_TOOLCHAIN)
+    # Copie le fichier contenant les dépendances des packages 'vcpkg' nécessaires pour arcane
+    file(COPY "${GIT_WORKSPACE}/_build/arcane/vcpkg.json" DESTINATION "${GIT_WORKSPACE}/arcane")
+    do_command(${CMAKE_COMMAND} ${ARCANE_CMAKE_COMMON_ARGS}
+      -DCMAKE_TOOLCHAIN_FILE=${GIT_WORKSPACE}/vcpkg/scripts/buildsystems/vcpkg.cmake
+      )
+  else()
+    do_command(${CMAKE_COMMAND} ${ARCANE_CMAKE_COMMON_ARGS}
+      -C "${CONFIG_CACHE_DIR}"
+      -DCONFIG_COPY_DLLS=TRUE
+      )
+  endif()
+endif()
+
+if("build_arcane" IN_LIST BUILD_COMMANDS)
+  do_command(${CMAKE_COMMAND} --build "${CONFIG_BUILD_DIR}/arcane")
+endif()
+#do_command(${CMAKE_COMMAND} --build "${CONFIG_BUILD_DIR}/arcane" --target test)
+if("test_arcane" IN_LIST BUILD_COMMANDS)
+  message(STATUS "CMAKE_CTEST_COMMAND IS: ${CMAKE_CTEST_COMMAND}")
+  do_command(${CMAKE_CTEST_COMMAND} WORKING_DIRECTORY "${CONFIG_BUILD_DIR}/arcane")
 endif()
 
 # ----------------------------------------------------------------------------
