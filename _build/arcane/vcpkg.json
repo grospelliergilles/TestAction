@@ -7,12 +7,7 @@
       "mpi",
       "libxml2",
 
-      "hypre",
       "parmetis",
-      {
-          "name": "hdf5",
-          "features": [ "zlib" ],
-          "platform": "windows"
-      }
+      "hdf5"
   ]
 }
